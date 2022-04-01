@@ -1,0 +1,68 @@
+// These are the request tests 
+// It depends on the VSCode's 'REST-Client' plugin
+// We use it to test our API request methods  
+
+// Variables used by all requests.
+@port = 8888
+@hostname = localhost
+@contentType = application/json
+
+//###################################################################
+// Authentication
+//###################################################################
+
+// POST to REGISTER a user
+POST http://{{hostname}}:{{port}}/api/register
+Content-Type: application/json
+
+{
+    "firstname": "john",
+    "lastname" :  "doe",
+    "email"    : "john@doe.com",
+    "password" :  "12345678"
+}
+###
+
+//###################################################################
+// login : POST 
+POST http://{{hostname}}:{{port}}/api/login
+Content-Type: application/json
+
+{
+    "email" : "john@doe.com",
+    "password" : "12345678"
+}
+###
+
+//###################################################################
+// dashboard 
+GET http://{{hostname}}:{{port}}/api/dashboard
+Content-Type: application/json
+###
+
+//###################################################################
+
+// logout 
+GET http://{{hostname}}:{{port}}/api/logout
+Content-Type: application/json
+
+###
+
+//###################################################################
+
+// login GET
+GET http://{{hostname}}:{{port}}/api/login
+Content-Type: application/json
+
+###
+
+//###################################################################
+
+// login REGISTER
+GET http://{{hostname}}:{{port}}/api/register
+Content-Type: application/json
+
+###
+
+//###################################################################
+

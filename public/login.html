@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    <form id="login-form" action="http://localhost:8888/api/login" method="post" class="login-form">
+
+        <label for="login-email" class="lbl-input">email</label>
+        <input type="email" name="email" id="login-email" class="input-login">
+
+        <label for="login-password" class="input-login">password</label>
+        <input type="password" name="password" id="login-password" class="input-login">
+
+        <button type="submit" class="input-login">Login</button>
+    </form>
+
+    <script>
+        let form = document.getElementById('login-form');
+        form.addEventListener('submit', handleFormSubmit(e));
+
+        async function handleFormSubmit(event) {
+            // This prevents the default behaviour of the browser submitting the form so that we can handle things instead.
+	        event.preventDefault();
+            
+	        // This gets the element which the event handler was attached to. @see https://developer.mozilla.org/en-US/docs/Web/API/Event/currentTarget
+	        const form = event.currentTarget;
+
+            // This takes the API URL from the form's `action` attribute.
+	        const url = form.action;
+            console.log(url);
+
+            // This takes all the fields in the form and makes their values available through a `FormData` instance.
+            const formData = new FormData(form);
+
+            // We can't pass the `FormData` instance directly to `fetch` as that will cause it to automatically format the request body as "multipart" 
+            // and set the `Content-Type` request header to `multipart/form-data`.
+            // We want to send the request body as JSON, so we're converting it to a plain object and then into a JSON string.
+
+            const plainFormData = Object.fromEntries(formData.entries());
+            console.log(plainFormData);
+            
+            //fetch the post request 
+            const response = await fetch(url, {
+
+                method: POST,
+                headers: {
+                    "Content-Type": "application/json",
+			        "Accept": "application/json"
+                },
+                body: JSON.stringify(plainFormData)
+
+            }).then( response => { 
+                return response.json();
+                // The json() method of the Response interface takes a Response stream and reads it to completion. 
+                // It returns a promise which resolves with the result of parsing the body text as JSON.
+                // Note that despite the method being named json(), the result is not JSON but is instead the result 
+                // of taking JSON as input and parsing it to produce a JavaScript object.
+                // The .json() method returns a promise to the parsed JSON, not the parsed JSON itself.
+            }).then( parsedJson => {
+                    // code that can access both here
+                    console.log(parsedJson);
+            }).catch((err) => {
+                console.log(err);
+            })        
+        }
+    </script>
+</body>
+</html>

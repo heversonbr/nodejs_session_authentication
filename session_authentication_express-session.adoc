@@ -1,0 +1,24 @@
+= Web Authentication (node.js, express, mongodb) using `express-session,` and `connect-mongo`
+
+== Introduction
+
+
+In this example, a simple API to authenticate users. 
+We use session-based authentication using the 'express-session' module.
+
+
+== Dependencias 
+
+[source, bash]
+----
+$ npm install express --save
+$ npm install pug --save
+$ npm install body-parser --save
+$ npm install mongoose --save 
+$ npm install client-sessions --save
+$ npm install bcryptjs
+$ npm install csurf
+----
+
+Other libraries to check: passport, node-login, aqua, okta 
+
