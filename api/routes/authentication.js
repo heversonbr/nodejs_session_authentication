@@ -69,7 +69,6 @@ router.post( '/login' , async (req, res, next) => {
     
     return res.redirect("/api/dashboard");
     //return res.status(200).sendFile(path.join(__dirname, '../../public/dashboard.html'));
-
 });
 
 // GET dashboardh "/api/dashboard" :
@@ -96,7 +95,6 @@ router.get( '/dashboard' , loginRequired, (req, res, next) => {
             console.log("user does not exist. redirecting to /login")
             //return res.status(200).send({ status: 'FAIL' , message : 'User does not exist. redirect to /login'});
             return res.redirect("/api/login");
-            
         }
         // user found/
         console.log("user found, rendering dashboard");
@@ -151,7 +149,7 @@ router.post( '/register' , async (req, res, next) => {
     // Save into the database.
     try{
         const savedUser = await user.save();
-        return res.send({ status: 'SUCCESS' , message: 'created user: ' + savedUser._id + ', redirect to /'});
+        return res.send({ status: 'SUCCESS' , message: 'created user: redirect to /' , user: savedUser._id});
         //return res.redirect("/");
 
     }

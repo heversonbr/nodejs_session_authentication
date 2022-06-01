@@ -4,19 +4,21 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo');
+const session = require('express-session');
 const publicRouter = require('./api/routes/public');
 const authRouter = require('./api/routes/authentication');
-const session = require('express-session');
+const csurf = require('csurf');
+
 const {loadUserFromSession} = require('./api/middlewares/authController');
 
 const app = express();
-
 
 // Connect to DB using mongoose
 const dbOptions = {
         useNewUrlParser : true,
         useUnifiedTopology : true
 }
+
 console.log('Trying to connect to ' + process.env.DB_URL + '/' + process.env.DB_NAME)
 const connectionPromise = mongoose.connect(process.env.DB_URL + '/' + process.env.DB_NAME, dbOptions)
 .then(mongoose =>{ 
@@ -26,8 +28,7 @@ const connectionPromise = mongoose.connect(process.env.DB_URL + '/' + process.en
     .catch(err => {
         console.log("Cannot connect to the database!", err);
         process.exit();
-    });
-
+});
 
 // session Store
 const sessionStore =  MongoStore.create({
@@ -41,7 +42,6 @@ const sessionStore =  MongoStore.create({
     autoRemove: 'native' // Default
 })
 
-  
 // Configure our session
   app.use(session({
         secret: process.env.SESSION_SECRET,      // should be a large unguessable string
@@ -54,16 +54,11 @@ const sessionStore =  MongoStore.create({
             //expires: 60 * 1000,           // in miliseconds, Note If both expires and maxAge are set in the options, then the last one defined in the object is what is used.  The expires option should not be set directly; instead only use the maxAge option.
             //secure: true,                 // setting this to true, as compliant clients will not send the cookie back to the server in the future if the browser does not have an HTTPS connection.
          },
-
         store: sessionStore,
 
-        // saveUninitialized: false,               // don't create session until something stored
-        // resave: false,                          //don't save session if unmodified
         
     })
   );
-
-
 
 // logging package
 app.use(morgan('dev'));
@@ -71,9 +66,15 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// 2) CORS: enable CORS using npm package
+// CORS: enable CORS using npm package
 var cors = require('cors');
 app.use(cors());
+
+// CSRF (cross-site resource forgery) Protection
+// app.use('csurf');
+// NOTE THAT: in this example we are not handling CSRF tokens to avoid potential CSRF attacks. Must do it in production environments.
+// ref: https://youtu.be/j8Yxff6L_po?t=1470
+
 
 // debug middleware: used only to print request information
 app.use( (req, res, next) => {
@@ -94,7 +95,8 @@ app.use( (req, res, next) => {
     next();
 });
 
-// for each request, this middleware checks if there is a session stored in the database 
+// for each request, it verifies the session-data is in the request, if so it loads 
+// the user obecjt related to the session
 app.use(loadUserFromSession);  
 
 // Routers that should handle requests
